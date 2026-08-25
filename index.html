@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Unique Font + Realistic Animal Design Generator</title>
+<style>
+:root{
+ --blue:#168FEA;--blue2:#103B63;--ink:#171A1E;--silver:#d8dde3;--white:#fff;
+ --mist:#f5f7fa;--muted:#68717c;--line:#dfe4ea;--success:#0f8b5f;
+ --shadow:0 16px 44px rgba(20,27,38,.10);--r:20px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--mist);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;overflow-x:hidden}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+a{color:inherit}
+.app{min-height:100vh}
+.hero{position:relative;overflow:hidden;background:linear-gradient(135deg,#07131f 0%,#0d263b 55%,#103B63 100%);color:#fff;padding:34px 26px 56px}
+.hero:before,.hero:after{content:"";position:absolute;border-radius:999px;filter:blur(1px);opacity:.42;animation:floatGlow 8s ease-in-out infinite}
+.hero:before{width:380px;height:380px;background:#168FEA;right:-140px;top:-150px}
+.hero:after{width:220px;height:220px;background:#fff;left:-120px;bottom:-150px;opacity:.08;animation-delay:-3s}
+@keyframes floatGlow{50%{transform:translate3d(-18px,20px,0) scale(1.08)}}
+.hero-inner{max-width:1480px;margin:auto;display:grid;grid-template-columns:minmax(0,1.45fr) minmax(260px,.55fr);gap:32px;align-items:center;position:relative;z-index:2}
+.kicker{display:inline-flex;padding:8px 12px;border:1px solid rgba(255,255,255,.2);border-radius:999px;font-size:.77rem;font-weight:900;letter-spacing:.09em;text-transform:uppercase;background:rgba(255,255,255,.08);backdrop-filter:blur(8px)}
+h1{font-size:clamp(2.15rem,5vw,4.8rem);line-height:.96;margin:16px 0 13px;max-width:930px;letter-spacing:-.045em}
+.hero p{margin:0;max-width:820px;color:#dce9f5;font-size:1.03rem}
+.hero-steps{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.hero-steps span{font-size:.79rem;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.13)}
+.video-card{justify-self:end;width:min(100%,360px);border-radius:22px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);padding:12px;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:gentleFloat 4s ease-in-out infinite}
+@keyframes gentleFloat{50%{transform:translateY(-7px)}}
+.video-placeholder{aspect-ratio:16/9;border-radius:14px;background:linear-gradient(145deg,#162c42,#0d1c2b);border:1px dashed rgba(255,255,255,.4);display:grid;place-items:center;text-align:center;padding:16px}
+.play{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;margin:auto auto 8px;background:#168FEA;box-shadow:0 0 26px rgba(22,143,234,.45)}
+.video-placeholder strong{display:block;font-size:.92rem}.video-placeholder small{color:#adc0d1}
+.marquee-wrap{height:76px;margin-top:-27px;position:relative;z-index:4;transform:rotate(-2.4deg);transform-origin:center;overflow:hidden;display:flex;align-items:center}
+.marquee{white-space:nowrap;background:#168FEA;color:white;border-top:1px solid rgba(255,255,255,.35);border-bottom:1px solid rgba(0,0,0,.1);padding:12px 0;font-weight:900;letter-spacing:.05em;text-transform:uppercase;box-shadow:0 14px 30px rgba(22,143,234,.22)}
+.marquee-track{display:inline-block;animation:marquee 28s linear infinite}
+.marquee-track span{display:inline-block;margin:0 24px}
+@keyframes marquee{to{transform:translateX(-50%)}}
+.shell{max-width:1480px;margin:0 auto;padding:22px 24px 100px;display:grid;grid-template-columns:240px minmax(0,1fr);gap:20px}
+.sidebar{position:sticky;top:18px;align-self:start;background:#0c1117;color:#fff;border-radius:22px;padding:14px;box-shadow:var(--shadow);max-height:calc(100vh - 36px);overflow:auto}
+.brand-mini{padding:8px 10px 13px;border-bottom:1px solid #2a3139;margin-bottom:8px}.brand-mini strong{display:block}.brand-mini small{color:#9ba5b0}
+.tabs{display:grid;gap:5px}
+.tab{width:100%;border:0;background:transparent;color:#cbd2da;text-align:left;padding:10px 11px;border-radius:11px;font-weight:750;font-size:.86rem;transition:.22s}
+.tab:hover,.tab.active{background:#168FEA;color:#fff;transform:translateX(2px)}
+.panel{display:none;animation:fadeUp .32s ease}.panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.panel-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:12px}
+.panel-head h2{margin:0;font-size:clamp(1.5rem,3vw,2.2rem)}.panel-head p{margin:4px 0 0;color:var(--muted);max-width:760px}
+.badge{white-space:nowrap;background:#e9f5ff;color:#0c5f9d;padding:7px 10px;border-radius:999px;font-weight:850;font-size:.76rem}
+.preset{background:#fff;border:1px solid var(--line);border-radius:16px;margin:0 0 10px;box-shadow:0 5px 18px rgba(22,27,34,.04);overflow:hidden}
+.preset summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 17px;font-weight:900;cursor:pointer;transition:.22s}
+.preset summary::-webkit-details-marker{display:none}.preset summary:hover{background:#fbfcfe}
+.preset summary:after{content:"+";font-size:1.35rem;color:#168FEA;transition:.25s}.preset[open] summary:after{transform:rotate(45deg)}
+.preset-body{padding:0 17px 17px}
+.help{color:var(--muted);font-size:.84rem;margin:-2px 0 11px}
+.check-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.check{display:flex;align-items:flex-start;gap:8px;padding:8px 9px;border:1px solid transparent;border-radius:10px;font-size:.86rem;min-width:0;transition:.18s}
+.check:hover{background:#f4f9fd;border-color:#d7ebfb}.check input{margin-top:2px;accent-color:#168FEA}
+.check span{overflow-wrap:anywhere}
+.custom{margin-top:11px;display:grid;grid-template-columns:1fr auto;gap:8px}
+.custom input,.field input,.field textarea{width:100%;border:1px solid #cfd7df;border-radius:10px;padding:10px 11px;outline:none;background:#fff}
+.custom input:focus,.field input:focus,.field textarea:focus{border-color:#168FEA;box-shadow:0 0 0 3px rgba(22,143,234,.12)}
+.custom button{border:0;background:#eef6fc;color:#0e639e;border-radius:10px;padding:0 13px;font-weight:800}
+.field-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.field label{display:block;font-size:.78rem;font-weight:850;margin-bottom:5px}.field textarea{min-height:80px;resize:vertical}
+.colors{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.colorbox{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:9px}.colorbox input{width:44px;height:36px;padding:0;border:0;background:transparent}.colorbox b{font-size:.8rem;display:block}.colorbox small{color:var(--muted)}
+.callout{padding:12px 14px;border-radius:12px;background:#eef7ff;border:1px solid #cfe9fb;color:#164c73;font-size:.85rem;margin-top:10px}
+.output-wrap{margin-top:20px;background:#0c1117;border-radius:22px;padding:20px;color:white;box-shadow:var(--shadow)}
+.output-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.output-head h2{margin:0}.output-head p{margin:4px 0 0;color:#9ea8b3;font-size:.88rem}
+.prompt-card{margin-top:12px;border:1px solid #303841;background:#171d24;border-radius:15px;padding:15px;animation:fadeUp .35s ease}
+.prompt-card h3{margin:0 0 9px}.prompt-text{white-space:pre-wrap;line-height:1.6;color:#e5e9ee;font-size:.88rem;background:#0f141a;border:1px solid #2a333d;border-radius:11px;padding:13px;max-height:420px;overflow:auto}
+.copy-one{margin-top:10px;border:1px solid #3a4652;background:#202a34;color:white;border-radius:10px;padding:8px 11px;font-weight:800}
+.action-bar{position:sticky;bottom:12px;margin-top:18px;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border:1px solid var(--line);box-shadow:0 14px 40px rgba(20,27,38,.16);border-radius:18px;padding:10px;display:flex;gap:8px;flex-wrap:wrap;z-index:20}
+.action{border:1px solid #d4dbe2;background:#fff;border-radius:11px;padding:10px 13px;font-weight:900;transition:.2s}
+.action:hover{transform:translateY(-2px);box-shadow:0 7px 14px rgba(0,0,0,.08)}.primary{background:#168FEA;border-color:#168FEA;color:#fff}.dark{background:#171A1E;color:#fff;border-color:#171A1E}.danger{color:#a52a2a}
+.toast{position:fixed;right:20px;bottom:88px;background:#0c1117;color:#fff;padding:10px 14px;border-radius:12px;box-shadow:var(--shadow);opacity:0;transform:translateY(12px);pointer-events:none;transition:.25s;z-index:99}.toast.show{opacity:1;transform:none}
+footer{background:#080c11;color:#c8d0d8;padding:28px 24px}.footer-inner{max-width:1480px;margin:auto;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}.footer-inner strong{color:#fff}.footer-inner small{color:#89939e}
+@media(max-width:980px){.hero-inner{grid-template-columns:1fr}.video-card{justify-self:start}.shell{grid-template-columns:1fr}.sidebar{position:relative;top:0;max-height:none}.tabs{grid-template-columns:repeat(4,minmax(0,1fr))}.tab{text-align:center}.check-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.hero{padding:28px 18px 52px}.shell{padding:18px 14px 90px}.tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.panel-head{align-items:flex-start;flex-direction:column}.check-grid,.field-grid,.colors{grid-template-columns:1fr}.custom{grid-template-columns:1fr}.custom button{padding:9px}.action-bar{bottom:6px}.marquee-wrap{height:62px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="hero">
+  <div class="hero-inner">
+    <div>
+      <span class="kicker">Prompt Design Studio</span>
+      <h1>Unique Font + Realistic Animal Design Generator</h1>
+      <p>Build polished image-generation prompts that combine believable animal anatomy, unusual typography, commercial layouts, coordinated collections, and product-ready formatting.</p>
+      <div class="hero-steps">
+        <span>1. Pick a product</span><span>2. Choose animals</span><span>3. Style the typography</span><span>4. Add details</span><span>5. Generate + copy</span>
+      </div>
+    </div>
+    <div class="video-card">
+      <div class="video-placeholder">
+        <div><div class="play">▶</div><strong>Your Video Goes Here</strong><small>Small 16:9 hero video placeholder</small></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="marquee-wrap" aria-label="feature marquee">
+  <div class="marquee">
+    <div class="marquee-track">
+      <span>REALISTIC ANIMALS</span><span>UNIQUE TYPOGRAPHY</span><span>SEPARATE CANVASES</span><span>STICKER PACKS</span><span>TUMBLER WRAPS</span><span>COLORING PAGES</span><span>T-SHIRT GRAPHICS</span><span>SURPRISE ME</span>
+      <span>REALISTIC ANIMALS</span><span>UNIQUE TYPOGRAPHY</span><span>SEPARATE CANVASES</span><span>STICKER PACKS</span><span>TUMBLER WRAPS</span><span>COLORING PAGES</span><span>T-SHIRT GRAPHICS</span><span>SURPRISE ME</span>
+    </div>
+  </div>
+</div>
+
+<main class="shell">
+  <aside class="sidebar">
+    <div class="brand-mini"><strong>Generator Studio</strong><small>Choose a workspace</small></div>
+    <nav class="tabs" id="tabs"></nav>
+  </aside>
+
+  <section>
+    <div id="panels"></div>
+
+    <section class="output-wrap" id="outputs">
+      <div class="output-head">
+        <div><h2>Your Generated Prompts</h2><p>Only selected design types will appear here.</p></div>
+        <span class="badge" id="outputCount">0 prompts</span>
+      </div>
+      <div id="promptCards"></div>
+    </section>
+
+    <div class="action-bar">
+      <button class="action primary" id="generateBtn">Generate Prompts</button>
+      <button class="action dark" id="copyAllBtn">Copy All Prompts</button>
+      <button class="action" id="randomBtn">Random</button>
+      <button class="action" id="surpriseBtn">Surprise Me</button>
+      <button class="action danger" id="resetBtn">Clear / Reset</button>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div><strong>Unique Font + Realistic Animal Design Generator</strong><br><small>Built for clean, beginner-friendly commercial prompt creation.</small></div>
+    <small>Choose only what matters. You never have to fill every section.</small>
+  </div>
+</footer>
+<div class="toast" id="toast">Copied!</div>
+</div>
+
+<script>
+const DATA = {"designType": ["Black-and-White Coloring Pages", "Sticker Pack", "T-Shirt Design", "Tumbler Design"], "collectionSize": ["1 Design", "10 Designs", "12 Designs", "20 Designs", "3 Designs", "5 Designs"], "dogs": ["American Bully", "Australian Shepherd", "Beagle", "Border Collie", "Boston Terrier", "Boxer", "Cane Corso", "Chihuahua", "Corgi", "Dachshund", "Doberman", "English Bulldog", "French Bulldog", "German Shepherd", "Golden Retriever", "Goldendoodle", "Great Dane", "Husky", "Labradoodle", "Labrador Retriever", "Maltese", "Pit Bull", "Pomeranian", "Poodle", "Rottweiler", "Schnauzer", "Shih Tzu", "Standard Poodle", "Toy Poodle", "Yorkshire Terrier"], "cats": ["Bengal", "Black Cat", "British Shorthair", "Calico Cat", "Domestic Longhair", "Domestic Shorthair", "Maine Coon", "Orange Tabby", "Persian", "Ragdoll", "Russian Blue", "Savannah Cat", "Scottish Fold", "Siamese", "Sphynx", "Tuxedo Cat"], "wildCats": ["Black Panther", "Bobcat", "Cheetah", "Cougar", "Jaguar", "Leopard", "Lion", "Lioness", "Lynx", "Snow Leopard", "Tiger", "White Tiger"], "africanWildlife": ["African Buffalo", "Antelope", "Baboon", "Chimpanzee", "Elephant", "Gazelle", "Giraffe", "Gorilla", "Hippopotamus", "Hyena", "Rhinoceros", "Wildebeest", "Zebra"], "woodland": ["Badger", "Bear", "Black Bear", "Brown Bear", "Buck", "Deer", "Doe", "Elk", "Fox", "Grizzly Bear", "Hare", "Hedgehog", "Moose", "Rabbit", "Raccoon", "Squirrel", "Wolf"], "farm": ["Bull", "Calf", "Chicken", "Cow", "Donkey", "Duck", "Goat", "Goose", "Highland Cow", "Horse", "Lamb", "Pig", "Pony", "Rooster", "Sheep", "Turkey"], "birds": ["Bald Eagle", "Blue Jay", "Cardinal", "Cockatoo", "Crane", "Crow", "Dove", "Eagle", "Falcon", "Flamingo", "Hawk", "Hummingbird", "Macaw", "Owl", "Parrot", "Peacock", "Raven", "Swan"], "marine": ["Blue Whale", "Dolphin", "Great White Shark", "Hammerhead Shark", "Humpback Whale", "Jellyfish", "Manta Ray", "Octopus", "Orca", "Sea Lion", "Sea Turtle", "Seahorse", "Seal", "Shark", "Stingray"], "reptiles": ["Alligator", "Boa", "Chameleon", "Cobra", "Crocodile", "Frog", "Gecko", "Iguana", "Python", "Rattlesnake", "Salamander", "Snake", "Tree Frog", "Turtle"], "insects": ["Bee", "Beetle", "Bumblebee", "Butterfly", "Dragonfly", "Honey Bee", "Ladybug", "Moth", "Praying Mantis", "Snail", "Spider"], "exotic": ["Alpaca", "Camel", "Capybara", "Kangaroo", "Koala", "Lemur", "Llama", "Meerkat", "Otter", "Panda", "Red Panda", "Sloth"], "rendering": ["Cinematic Animal Portrait", "Detailed Digital Realism", "Editorial Animal Photography", "Engraved Animal Illustration", "Fine-Art Animal Portrait", "High-End Animal Portrait", "Hyperrealistic", "Luxury Pet Portrait", "Photorealistic", "Realistic Colored Pencil", "Realistic Oil Painting", "Realistic Watercolor", "Scientific Illustration", "Studio Animal Portrait", "Vintage Naturalist Illustration", "Wildlife Photography", "Woodcut Animal Illustration"], "age": ["Adult", "Baby", "Elder", "Juvenile", "Mature", "Young Adult"], "pose": ["Action Pose", "Animal Family", "Animal Pair", "Close-Up Portrait", "Flying", "Full Body", "Group Formation", "Head-and-Shoulders Portrait", "Hero Pose", "Hunting", "Jumping", "Looking Forward", "Looking Over Shoulder", "Looking Sideways", "Lying Down", "Mid-Motion", "Parent + Baby", "Playing", "Profile Pose", "Resting", "Running", "Sitting", "Sleeping", "Standing", "Swimming", "Walking"], "mood": ["Alert", "Calm", "Confident", "Curious", "Elegant", "Energetic", "Fierce", "Gentle", "Intense", "Majestic", "Mysterious", "Peaceful", "Playful", "Powerful", "Protective", "Regal", "Serious"], "viewpoint": ["Close-Up", "Dramatic Low Angle", "Environmental Portrait", "Extreme Close-Up", "Eye Level", "Full Body", "Low Angle", "Side Profile", "Slightly Above", "Straight-On", "Three-Quarter View"], "environment": ["Arctic", "Beach", "Desert", "Dramatic Sky", "Farm", "Flower Field", "Forest", "Garden", "Jungle", "Lake", "Luxury Interior", "Meadow", "Moody Dark Background", "Mountains", "Natural Habitat", "Night Sky", "Ocean", "Rainforest", "River", "Rustic Barn", "Savannah", "Snow", "Studio Background", "Sunrise", "Sunset", "Transparent / Isolated", "Tropical Environment", "Underwater", "Urban Environment"], "typography": ["Animal-Print Letters", "Balloon Letters", "Bold Condensed Letters", "Bubble Letters", "Butterfly Letters", "Candy Letters", "Cereal Letters", "Chain Letters", "Chenille Letters", "Chocolate Letters", "Chrome Letters", "Concrete Letters", "Cookie Letters", "Cow-Print Letters", "Crocodile Texture Letters", "Crystal Letters", "Denim Letters", "Diamond Letters", "Dripping Letters", "Editorial Serif Letters", "Embroidered Letters", "Feather Letters", "Fire Letters", "Flame Letters", "Flower Letters", "Frosting Letters", "Frozen Letters", "Fruit Letters", "Fur-Texture Letters", "Furry Letters", "Gemstone Letters", "Glass Letters", "Glitter Letters", "Gold Letters", "Gothic Letters", "Graffiti Letters", "Grass Letters", "Gummy Letters", "Handwritten Script", "Ice Letters", "Inflated Letters", "Leaf Letters", "Leather Letters", "Leopard-Print Letters", "Liquid Chrome", "Liquid Glass", "Luxury Serif Letters", "Marble Letters", "Melting Letters", "Metallic Letters", "Moss Letters", "Patchwork Letters", "Pearl Letters", "Plush Letters", "Puffy 3D Letters", "Retro Groovy Letters", "Rhinestone Letters", "Rope Letters", "Rose Letters", "Sequin Letters", "Silver Letters", "Slime Letters", "Smoke Letters", "Snake-Skin Letters", "Snow Letters", "Sprinkle Letters", "Sticker Letters", "Stone Letters", "Varsity Block Letters", "Varsity Patch Letters", "Velvet Letters", "Water Letters", "Western Letters", "Wood Letters", "Y2K Bubble Letters", "Zebra-Print Letters"], "objectType": ["Animal Fur", "Animal Spots", "Animal Stripes", "Balloons", "Bows", "Branches", "Butterflies", "Candy", "Chains", "Clouds", "Cookies", "Coral", "Crystals", "Feathers", "Flames", "Flowers", "Fruits", "Gummy Candy", "Hearts", "Ice", "Leaves", "Paw Prints", "Pearls", "Rhinestones", "Rope", "Roses", "Seashells", "Sports Balls", "Stars", "Stones", "Vines", "Water Drops", "Wood"], "typoShape": ["Arched", "Behind Animal", "Circular", "Compact", "Diagonal", "In Front of Animal", "Interlocking", "Layered", "Overlapping", "Oversized", "Slight Curve", "Stacked", "Straight", "Tall Condensed", "Vertical", "Wide", "Wrapped Around Animal"], "effects": ["3D Depth", "Beveled Edges", "Cracked", "Debossed", "Distressed", "Dripping", "Drop Shadow", "Embossed", "Frosted", "Glitter", "Glossy", "Holographic", "Iridescent", "Matte", "Melting", "Metallic", "Neon Glow", "Pearlescent", "Puffy", "Raised", "Reflective", "Rim Lighting", "Soft Glow", "Sparkle", "Translucent", "Transparent", "Weathered"], "relationship": ["Animal + Large Headline", "Animal Above Typography", "Animal Behind Typography", "Animal Below Typography", "Animal Beside Typography", "Animal Breaking Through Typography", "Animal Centered Between Words", "Animal Emerging From Typography", "Animal Inside Letter", "Animal Integrated Into Letters", "Animal Silhouette Behind Word", "Animal Wrapped Around Typography", "Split Animal + Typography Composition", "Typography Framing Animal"], "elements": ["Animal Tracks", "Bees", "Bows", "Branches", "Butterflies", "Chains", "Clouds", "Crystals", "Distressed Texture", "Flames", "Flowers", "Gems", "Graffiti", "Grass", "Halftones", "Hearts", "Leaves", "Lightning", "Moon", "Mountains", "Paint Splashes", "Paw Prints", "Pearls", "Ribbons", "Roses", "Seashells", "Smoke", "Sparkles", "Stars", "Sun", "Trees", "Vines", "Vintage Texture", "Water", "Waves", "Wildflowers"], "colorDirection": ["Autumn", "Black + White", "Bright", "Dark", "Earth Tones", "Feminine", "Jewel Tones", "Luxury Neutral", "Masculine", "Monochromatic", "Moody", "Natural Animal Colors", "Neon", "Neutral", "Pastel", "Realistic Wildlife Colors", "Retro", "Spring", "Summer", "Sunset", "Tropical", "Vibrant", "Vintage", "Winter"], "composition": ["Animal + Typography", "Animal Dominant", "Animal Portrait + Text", "Asymmetrical", "Badge Style", "Centered", "Circular Composition", "Dynamic Action Composition", "Editorial", "Emblem Style", "Full-Bleed", "Horizontal Composition", "Isolated Graphic", "Layered", "Minimal", "Oversized Typography", "Poster Style", "Stacked", "Symmetrical", "Typography Dominant", "Vertical Composition"], "background": ["Black Background", "Distressed Background", "Dramatic Lighting Background", "Gradient", "Natural Environment", "Soft Neutral Background", "Solid Color", "Studio Background", "Textured Background", "Transparent Background", "Vintage Background", "White Background"], "tshirt": ["Animal + Typography", "Animal Portrait", "Bold Commercial Graphic", "Distressed", "Editorial", "Luxury Streetwear", "Minimal", "Outdoor", "Preppy", "Retro", "Sports Inspired", "Streetwear", "Typography Focus", "Vintage Graphic Tee", "Western"], "tumbler": ["Animal + Typography Wrap", "Animal Portrait Wrap", "Centered Feature Design", "Collage Wrap", "Full Wrap", "Luxury Wrap", "Pattern-Based Wrap", "Scenic Wrap", "Seamless Wrap", "Typography Wrap"], "stickerType": ["Animal + Phrase", "Animal + Typography", "Animal Portrait Stickers", "Cute but Realistic Animal Stickers", "Educational Animal Stickers", "Full Body Animals", "Funny Animal Stickers", "Luxury Animal Stickers", "Pet Sticker Pack", "Seasonal Animal Stickers", "Typography Stickers", "Wildlife Sticker Pack"], "stickerShape": ["Circle", "Die-Cut", "Kiss-Cut", "Organic Contour", "Oval", "Rounded Square", "Square"], "stickerBorder": ["Black Border", "Colored Border", "No Border", "Thick White Border", "White Border"], "stickerFinish": ["Glitter", "Glossy", "Holographic", "Matte", "Transparent Vinyl", "Vinyl"], "coloringStyle": ["Advanced Adult Coloring Page", "Animal + Flowers", "Animal + Typography", "Animal in Natural Habitat", "Animal Portrait Coloring Page", "Botanical Animal Coloring Page", "Detailed Wildlife Coloring Page", "Educational Animal Coloring Page", "Mandala Animal", "Realistic Animal Coloring Page", "Simple Adult Coloring Page", "Vintage Naturalist Coloring Page", "Zentangle-Inspired Animal"], "detailLevel": ["Advanced Adult Coloring", "Detailed", "Highly Detailed", "Moderate", "Simple"], "audience": ["Adults", "Animal Professionals", "Animal Rescue Community", "Cat Lovers", "Dog Lovers", "Equestrian Audience", "Farmers", "Fishermen", "Gift Market", "Hunters", "Kids", "Luxury Gift Market", "Men", "Outdoor Enthusiasts", "Pet Owners", "Students", "Teachers", "Teens", "Wildlife Lovers", "Women", "Youth"], "theme": ["Adoption", "Birthday", "Christmas", "Easter", "Everyday", "Fall", "Farm Life", "Father's Day", "Funny", "Graduation", "Halloween", "Inspirational", "Memorial", "Mother's Day", "Motivational", "Nature", "Outdoor Life", "Pet Memorial", "Rescue", "Spring", "Summer", "Thanksgiving", "Valentine's Day", "Wildlife", "Winter"], "avoid": ["Bad Anatomy", "Blurry Details", "Cartoon Proportions", "Chibi Animals", "Childish Illustration", "Deformed Faces", "Deformed Paws", "Duplicate Animals", "Excessive Background Clutter", "Extra Limbs", "Floating Objects", "Incorrect Horns", "Incorrect Wings", "Logos", "Low Resolution", "Missing Limbs", "Misspelled Text", "Mockups", "Oversized Eyes", "Oversized Heads", "Plush Appearance", "Random Text", "Tiny Bodies", "Toy-Like Animals", "Watermarks"], "multiAnimal": ["Animal Family", "Animal Pair", "Combine Animals in One Design", "Create Separate Collection for Each Animal", "Mix Animals Across Collection", "One Animal Per Variation", "Wildlife Group"]};
+
+const sectionMap = [
+ {tab:"Start",title:"Start Here",desc:"Choose the product type, collection size, and exact wording.",sections:[
+  ["designType","What Would You Like to Create?","Select one or more. Each selected product gets its own finished prompt."],
+  ["collectionSize","How Many Designs Should Be Created?","Multiple-design requests become coordinated but genuinely different variations."],
+  ["TEXT","Words + Phrases","Use exact wording whenever text needs to appear in the design."]
+ ]},
+ {tab:"Animals",title:"Choose Your Animals",desc:"Browse animal categories without loading the page with one giant list.",sections:[
+  ["dogs","Dogs"],["cats","Cats"],["wildCats","Wild Cats"],["africanWildlife","African Wildlife"],["woodland","Woodland Animals"],["farm","Farm Animals"],["birds","Birds"],["marine","Marine Animals"],["reptiles","Reptiles + Amphibians"],["insects","Insects + Small Creatures"],["exotic","Exotic Animals"],["multiAnimal","How Should Multiple Animals Be Used?"]
+ ]},
+ {tab:"Animal Style",title:"Animal Styling",desc:"Control realism, age, pose, mood, camera view, and environment.",sections:[
+  ["rendering","Animal Rendering Style"],["age","Animal Age"],["pose","Animal Pose"],["mood","Expression / Mood"],["viewpoint","Animal Viewpoint"],["environment","Animal Environment"]
+ ]},
+ {tab:"Typography",title:"Typography Studio",desc:"Build dramatic lettering without sacrificing readability.",sections:[
+  ["typography","Unique Typography Style"],["objectType","Build the Word From Objects"],["typoShape","Typography Shape"],["effects","Typography Effects"],["relationship","Animal + Typography Relationship"]
+ ]},
+ {tab:"Design",title:"Design Direction",desc:"Shape the palette, supporting details, composition, and background.",sections:[
+  ["elements","Additional Elements"],["colorDirection","Color Direction"],["COLORS","Custom Colors"],["composition","Composition"],["background","Background Treatment"]
+ ]},
+ {tab:"Products",title:"Product-Specific Settings",desc:"These controls are only used when their matching product type is selected.",sections:[
+  ["tshirt","T-Shirt Style"],["tumbler","Tumbler Style"],["stickerType","Sticker Pack Type"],["stickerShape","Sticker Shape"],["stickerBorder","Sticker Border"],["stickerFinish","Sticker Finish"],["coloringStyle","Coloring Page Style"],["detailLevel","Coloring Page Detail Level"]
+ ]},
+ {tab:"Market",title:"Audience + Theme",desc:"Optional direction for who the design is for and what occasion it supports.",sections:[
+  ["audience","Target Audience"],["theme","Occasion / Theme"]
+ ]},
+ {tab:"Avoid",title:"Quality Controls",desc:"Prevent anatomy mistakes, childish styling, clutter, and unwanted output.",sections:[
+  ["avoid","Things to Avoid"]
+ ]}
+];
+
+const animalGroups = ["dogs","cats","wildCats","africanWildlife","woodland","farm","birds","marine","reptiles","insects","exotic"];
+
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]))}
+function safeId(s){return s.replace(/[^a-z0-9]/gi,"_")}
+
+function makeChecks(key){
+  const opts = ["None", ...DATA[key]];
+  return `<div class="check-grid" data-group="${key}">
+    ${opts.map((o,i)=>`<label class="check"><input type="checkbox" name="${key}" value="${esc(o)}" ${i===0?'data-none="true"':''}><span>${esc(o)}</span></label>`).join("")}
+  </div>
+  <div class="custom"><input type="text" data-custom="${key}" placeholder="Add Custom Option"><button type="button" data-add="${key}">Add</button></div>`;
+}
+
+function makeText(){
+ return `<div class="field-grid">
+  <div class="field"><label>Main Word</label><input id="mainWord" type="text" placeholder="Example: WILD"></div>
+  <div class="field"><label>Main Phrase</label><input id="mainPhrase" type="text" placeholder="Example: Born to Roam"></div>
+  <div class="field"><label>Optional Supporting Text</label><input id="supportText" type="text" placeholder="Optional supporting line"></div>
+  <div class="field"><label>Optional Year / Date</label><input id="yearDate" type="text" placeholder="Example: EST. 2026"></div>
+  <div class="field"><label>Optional Name</label><input id="optionalName" type="text" placeholder="Optional name"></div>
+  <div class="field"><label>Custom Exact Wording</label><input id="exactWording" type="text" placeholder="Use this wording exactly"></div>
+  <div class="field"><label>Custom Number of Designs</label><input id="customNumber" type="number" min="1" max="100" placeholder="Optional"></div>
+  <div class="field"><label>Custom Animal / Species</label><input id="customAnimal" type="text" placeholder="Any animal not listed"></div>
+  <div class="field"><label>Custom Environment</label><input id="customEnvironment" type="text" placeholder="Any environment"></div>
+  <div class="field"><label>Additional Colors</label><input id="additionalColors" type="text" placeholder="Example: gunmetal, electric blue"></div>
+ </div>
+ <div class="callout">Exact wording is preserved in the generated prompt. The generator will request accurate, fully legible text instead of silently changing your words.</div>`;
+}
+function makeColors(){
+ const arr=[["primaryColor","Primary Color","#168fea"],["secondaryColor","Secondary Color","#103b63"],["accentColor","Accent Color","#d8dde3"],["backgroundColor","Background Color","#ffffff"]];
+ return `<div class="colors">${arr.map(([id,l,v])=>`<label class="colorbox"><input id="${id}" type="color" value="${v}"><span><b>${l}</b><small class="hex">${v.toUpperCase()}</small></span></label>`).join("")}</div>
+ <div class="callout">Color pickers are optional. They are included only when you deliberately change them from their starting values.</div>`;
+}
+
+function buildUI(){
+ const tabs=document.getElementById("tabs"), panels=document.getElementById("panels");
+ sectionMap.forEach((p,idx)=>{
+   const b=document.createElement("button");
+   b.className="tab"+(idx===0?" active":""); b.textContent=p.tab; b.dataset.target="panel"+idx; tabs.appendChild(b);
+   const panel=document.createElement("section"); panel.className="panel"+(idx===0?" active":""); panel.id="panel"+idx;
+   panel.innerHTML=`<div class="panel-head"><div><h2>${p.title}</h2><p>${p.desc}</p></div><span class="badge">${p.sections.length} sections</span></div>`+
+    p.sections.map(([key,title,desc])=>{
+      const body=key==="TEXT"?makeText():key==="COLORS"?makeColors():makeChecks(key);
+      return `<details class="preset"><summary>${title}</summary><div class="preset-body">${desc?`<div class="help">${desc}</div>`:""}${body}</div></details>`;
+    }).join("");
+   panels.appendChild(panel);
+ });
+}
+buildUI();
+
+document.addEventListener("click",e=>{
+ const tab=e.target.closest(".tab");
+ if(tab){
+   document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+   document.querySelectorAll(".panel").forEach(x=>x.classList.remove("active"));
+   tab.classList.add("active"); document.getElementById(tab.dataset.target).classList.add("active");
+ }
+ const add=e.target.closest("[data-add]");
+ if(add){
+   const key=add.dataset.add, input=document.querySelector(`[data-custom="${key}"]`);
+   const val=input.value.trim(); if(!val)return;
+   const grid=document.querySelector(`[data-group="${key}"]`);
+   const id=safeId(key+"_"+val+"_"+Date.now());
+   const label=document.createElement("label");label.className="check";
+   label.innerHTML=`<input type="checkbox" name="${key}" value="${esc(val)}" checked><span>${esc(val)}</span>`;
+   grid.appendChild(label); input.value=""; syncNone(label.querySelector("input")); toast("Custom option added");
+ }
+});
+
+document.addEventListener("change",e=>{
+ if(e.target.matches('input[type="checkbox"]')) syncNone(e.target);
+ if(e.target.matches('input[type="color"]')) e.target.parentElement.querySelector(".hex").textContent=e.target.value.toUpperCase();
+});
+
+function syncNone(cb){
+ const group=document.querySelectorAll(`input[name="${CSS.escape(cb.name)}"]`);
+ const none=[...group].find(x=>x.value==="None");
+ if(cb.value==="None" && cb.checked) group.forEach(x=>{if(x!==cb)x.checked=false});
+ if(cb.value!=="None" && cb.checked && none) none.checked=false;
+}
+function checked(name){return [...document.querySelectorAll(`input[name="${CSS.escape(name)}"]:checked`)].map(x=>x.value).filter(x=>x!=="None")}
+function txt(id){return (document.getElementById(id)?.value||"").trim()}
+function join(a){return a.length?a.join(", "):"No preference specified"}
+function getAnimals(){let a=animalGroups.flatMap(checked); if(txt("customAnimal"))a.push(txt("customAnimal")); return a}
+function selectedCount(){
+ const c=txt("customNumber"); if(c)return parseInt(c,10);
+ const vals=checked("collectionSize").map(x=>parseInt(x)); return vals.length?Math.max(...vals):1;
+}
+function colorInfo(){
+ const changed=[];
+ const defaults={primaryColor:"#168fea",secondaryColor:"#103b63",accentColor:"#d8dde3",backgroundColor:"#ffffff"};
+ Object.keys(defaults).forEach(id=>{const el=document.getElementById(id);if(el && el.value.toLowerCase()!==defaults[id])changed.push(`${id.replace("Color"," color")}: ${el.value}`)});
+ if(txt("additionalColors"))changed.push(`additional colors: ${txt("additionalColors")}`);
+ const dirs=checked("colorDirection"); return [...dirs,...changed];
+}
+function exactText(){
+ return [["Main word",txt("mainWord")],["Main phrase",txt("mainPhrase")],["Supporting text",txt("supportText")],["Year / date",txt("yearDate")],["Name",txt("optionalName")],["Exact wording",txt("exactWording")]].filter(x=>x[1]).map(x=>`${x[0]}: "${x[1]}"`).join("; ");
+}
+function canvasRule(n){
+ if(n===10)return `Create exactly 10 separate finished design variations. Each design must appear on its own individual canvas. Canvas 1 = Design 1; Canvas 2 = Design 2; Canvas 3 = Design 3; Canvas 4 = Design 4; Canvas 5 = Design 5; Canvas 6 = Design 6; Canvas 7 = Design 7; Canvas 8 = Design 8; Canvas 9 = Design 9; Canvas 10 = Design 10. Do not combine the 10 designs into a collage, contact sheet, presentation board, grid, or single canvas.`;
+ if(n>1)return `Create exactly ${n} separate finished design variations. Every design must appear on its own individual canvas. Do not combine multiple designs into a collage, contact sheet, presentation board, grid, or single canvas.`;
+ return `Create one complete finished design on one clean canvas.`;
+}
+function productRules(type){
+ if(type==="T-Shirt Design")return `Commercial-grade apparel graphic with strong silhouette, clear hierarchy, legible typography, print-friendly details, clean edges, professional composition, and isolated artwork. Use transparency only if selected. Do not show a T-shirt mockup or human model unless explicitly requested. T-shirt style: ${join(checked("tshirt"))}.`;
+ if(type==="Tumbler Design")return `Create artwork appropriate for a 20 oz skinny tumbler wrap using a wide horizontal composition. Let the artwork flow naturally left to right and keep critical text/focal details away from the seam. Tumbler style: ${join(checked("tumbler"))}.`;
+ if(type==="Sticker Pack")return `Create individual clearly separated sticker designs with clean contours, no overlapping stickers, adequate spacing, commercial-quality outlines, and easy cutting/extraction. Sticker type: ${join(checked("stickerType"))}. Shape: ${join(checked("stickerShape"))}. Border: ${join(checked("stickerBorder"))}. Finish: ${join(checked("stickerFinish"))}.`;
+ if(type==="Black-and-White Coloring Pages")return `Use pure black line art on a white background. No grayscale, no color, no shading, no gradients, and no solid black areas that prevent coloring. Use crisp clean outlines, closed shapes where practical, clear printable detail, strong anatomical accuracy, and professional coloring-book quality. Keep animals realistic rather than chibi. Coloring style: ${join(checked("coloringStyle"))}. Detail level: ${join(checked("detailLevel"))}.`;
+ return "";
+}
+function buildPrompt(type){
+ const n=selectedCount(), animals=getAnimals(), text=exactText();
+ const customEnv=txt("customEnvironment"); const env=[...checked("environment"),...(customEnv?[customEnv]:[])];
+ const avoidance=[...checked("avoid")];
+ const baseAvoid=["chibi proportions","cartoon anatomy","oversized eyes","oversized heads","toy-like appearance","distorted anatomy","malformed paws","duplicate limbs","random text","watermarks","low-resolution details"];
+ const avoidAll=[...new Set([...avoidance,...baseAvoid])];
+ return `PROJECT
+Create premium commercial-quality ${type.toLowerCase()} artwork with a strong focal point, professional visual hierarchy, intentional composition, balanced spacing, sophisticated color relationships, high-resolution detail, clean typography, and print-ready design thinking.
+
+DESIGN TYPE
+${type}
+
+ANIMAL
+Animal(s): ${join(animals)}.
+Multiple-animal direction: ${join(checked("multiAnimal"))}.
+Maintain species-appropriate anatomy, realistic body proportions, believable paws/feet/wings/horns/tails/ears/eyes/facial structures, natural fur/feather/scale/skin/shell texture, and recognizable breed characteristics where applicable. Do not anthropomorphize unless deliberately requested.
+
+ANIMAL RENDERING
+Style: ${join(checked("rendering"))}.
+Age: ${join(checked("age"))}.
+Pose: ${join(checked("pose"))}.
+Expression / mood: ${join(checked("mood"))}.
+Viewpoint: ${join(checked("viewpoint"))}.
+Environment: ${join(env)}.
+
+TYPOGRAPHY
+Typography style: ${join(checked("typography"))}.
+Build word from objects: ${join(checked("objectType"))}. If object-built lettering is used, keep every requested word highly legible.
+Typography shape: ${join(checked("typoShape"))}.
+Effects: ${join(checked("effects"))}.
+Animal + typography relationship: ${join(checked("relationship"))}.
+
+WORDING
+${text || "No exact wording supplied."}
+When wording is supplied, reproduce it as accurately, completely, and legibly as possible. Do not replace, paraphrase, or invent wording.
+
+SUPPORTING ELEMENTS
+${join(checked("elements"))}.
+
+COLOR PALETTE
+${join(colorInfo())}.
+
+COMPOSITION
+Composition: ${join(checked("composition"))}.
+Background: ${join(checked("background"))}.
+For merchandise artwork, maintain clean visual separation between the artwork and background.
+
+TARGET + THEME
+Audience: ${join(checked("audience"))}.
+Occasion / theme: ${join(checked("theme"))}.
+
+PRODUCT-SPECIFIC REQUIREMENTS
+${productRules(type)}
+
+OUTPUT REQUIREMENTS
+${canvasRule(n)}
+${n>1?"Make the variations meaningfully different in pose, cropping, composition, typography treatment, element placement, environmental treatment, scale, layout, visual emphasis, and lighting where appropriate, while keeping the entire set visually coordinated.":""}
+
+QUALITY STANDARDS
+Premium commercial finish; accurate animal anatomy; strong contrast; clean edges; high-resolution micro-detail; intentional negative space; professional composition; cohesive visual storytelling; no random decorative clutter.
+
+NEGATIVE INSTRUCTIONS
+Avoid ${avoidAll.join(", ")}.`;
+}
+function generate(){
+ const types=checked("designType");
+ if(!types.length){toast("Choose at least one design type");document.querySelector('[name="designType"]')?.closest("details")?.setAttribute("open","");return}
+ const holder=document.getElementById("promptCards"); holder.innerHTML="";
+ types.forEach(type=>{
+  const prompt=buildPrompt(type);
+  const card=document.createElement("article");card.className="prompt-card";
+  card.innerHTML=`<h3>${esc(type)} Prompt</h3><div class="prompt-text">${esc(prompt)}</div><button class="copy-one" type="button">Copy This Prompt</button>`;
+  card.querySelector(".copy-one").addEventListener("click",()=>copyText(prompt,"Copied!"));
+  holder.appendChild(card);
+ });
+ document.getElementById("outputCount").textContent=`${types.length} prompt${types.length===1?"":"s"}`;
+ document.getElementById("outputs").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function copyText(s,msg){navigator.clipboard?.writeText(s).then(()=>toast(msg)).catch(()=>fallbackCopy(s,msg))}
+function fallbackCopy(s,msg){const t=document.createElement("textarea");t.value=s;document.body.appendChild(t);t.select();document.execCommand("copy");t.remove();toast(msg)}
+function copyAll(){
+ const texts=[...document.querySelectorAll(".prompt-text")].map(x=>x.textContent);
+ if(!texts.length)return toast("Generate prompts first");
+ copyText(texts.join("\\n\\n==============================\\n\\n"),"All prompts copied");
+}
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove("show"),1500)}
+function clearAll(){
+ document.querySelectorAll('input[type="checkbox"]').forEach(x=>x.checked=false);
+ document.querySelectorAll('input[type="text"],input[type="number"]').forEach(x=>x.value="");
+ const defs={primaryColor:"#168fea",secondaryColor:"#103b63",accentColor:"#d8dde3",backgroundColor:"#ffffff"};
+ Object.entries(defs).forEach(([id,v])=>{const e=document.getElementById(id);if(e){e.value=v;e.parentElement.querySelector(".hex").textContent=v.toUpperCase()}});
+ document.getElementById("promptCards").innerHTML="";document.getElementById("outputCount").textContent="0 prompts";
+ document.querySelectorAll(".check-grid").forEach(g=>{const n=g.querySelector('input[value="None"]');if(n)n.checked=true});
+ toast("Generator reset");
+}
+function pick(name,value){
+ const c=[...document.querySelectorAll(`input[name="${CSS.escape(name)}"]`)].find(x=>x.value===value);
+ if(c){c.checked=true;syncNone(c)}
+}
+function randomFrom(name,count=1){
+ const vals=DATA[name]||[]; if(!vals.length)return;
+ [...document.querySelectorAll(`input[name="${CSS.escape(name)}"]`)].forEach(x=>x.checked=false);
+ const shuffled=[...vals].sort(()=>Math.random()-.5).slice(0,Math.min(count,vals.length));
+ shuffled.forEach(v=>pick(name,v));
+}
+function randomize(){
+ clearAll();
+ const products=["T-Shirt Design","Tumbler Design","Sticker Pack","Black-and-White Coloring Pages"];
+ pick("designType",products[Math.floor(Math.random()*products.length)]);
+ pick("collectionSize",["1 Design","3 Designs","5 Designs","10 Designs"][Math.floor(Math.random()*4)]);
+ const animalGroup=animalGroups[Math.floor(Math.random()*animalGroups.length)];
+ randomFrom(animalGroup,1);randomFrom("rendering",1);randomFrom("pose",1);randomFrom("mood",1);randomFrom("viewpoint",1);randomFrom("environment",1);
+ randomFrom("typography",1);randomFrom("effects",1);randomFrom("composition",1);randomFrom("colorDirection",1);randomFrom("theme",1);
+ document.getElementById("mainPhrase").value=["WILD HEART","UNTAMED","BOLD INSTINCT","ROAM FREE","NATURE MADE"][Math.floor(Math.random()*5)];
+ toast("Random setup ready");
+}
+const concepts=[
+ {p:"T-Shirt Design",a:["wildCats","Black Panther"],r:"Cinematic Animal Portrait",t:"Liquid Chrome",phrase:"NIGHT INSTINCT",col:"Jewel Tones",comp:"Animal + Typography",rel:"Animal Emerging From Typography",effect:"Rim Lighting"},
+ {p:"Sticker Pack",a:["dogs","French Bulldog"],r:"Luxury Pet Portrait",t:"Puffy 3D Letters",phrase:"MAIN CHARACTER ENERGY",col:"Bright",comp:"Isolated Graphic",rel:"Animal + Large Headline",effect:"Glossy"},
+ {p:"Tumbler Design",a:["birds","Peacock"],r:"High-End Animal Portrait",t:"Gemstone Letters",phrase:"RARE BY NATURE",col:"Jewel Tones",comp:"Horizontal Composition",rel:"Typography Framing Animal",effect:"Pearlescent"},
+ {p:"Black-and-White Coloring Pages",a:["africanWildlife","Elephant"],r:"Scientific Illustration",t:"Editorial Serif Letters",phrase:"WILD BEAUTY",col:"Black + White",comp:"Centered",rel:"Animal Below Typography",effect:"Matte"}
+];
+function surprise(){
+ clearAll();const c=concepts[Math.floor(Math.random()*concepts.length)];
+ pick("designType",c.p);pick("collectionSize","5 Designs");pick(c.a[0],c.a[1]);pick("rendering",c.r);pick("typography",c.t);pick("colorDirection",c.col);pick("composition",c.comp);pick("relationship",c.rel);pick("effects",c.effect);
+ document.getElementById("mainPhrase").value=c.phrase;
+ if(c.p==="T-Shirt Design")pick("tshirt","Bold Commercial Graphic");
+ if(c.p==="Tumbler Design")pick("tumbler","Full Wrap");
+ if(c.p==="Sticker Pack"){pick("stickerType","Animal + Typography");pick("stickerShape","Die-Cut");pick("stickerBorder","White Border");pick("stickerFinish","Glossy")}
+ if(c.p==="Black-and-White Coloring Pages"){pick("coloringStyle","Detailed Wildlife Coloring Page");pick("detailLevel","Detailed")}
+ toast("Surprise concept built");
+}
+document.getElementById("generateBtn").addEventListener("click",generate);
+document.getElementById("copyAllBtn").addEventListener("click",copyAll);
+document.getElementById("randomBtn").addEventListener("click",randomize);
+document.getElementById("surpriseBtn").addEventListener("click",surprise);
+document.getElementById("resetBtn").addEventListener("click",clearAll);
+clearAll();
+</script>
+</body>
+</html>
